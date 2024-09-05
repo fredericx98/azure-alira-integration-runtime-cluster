@@ -59,6 +59,7 @@ resource "azurerm_linux_virtual_machine" "integrationruntime_backend_vm" {
   network_interface_ids = [azurerm_network_interface.integrationruntime_backend_nic.id]
   disable_password_authentication = false 
   custom_data = filebase64("scripts/userdata.sh") 
+ 
 
   os_disk {
     caching              = "ReadWrite"
@@ -131,8 +132,8 @@ resource "azurerm_private_link_service" "psl" {
   location            = var.location
   resource_group_name = var.resource_group_name
 
-  auto_approval_subscription_ids              = [var.subscription_id]
-  visibility_subscription_ids                 = [var.subscription_id]
+  # auto_approval_subscription_ids              = [var.subscription_id]
+  # visibility_subscription_ids                 = [var.subscription_id]
   
   load_balancer_frontend_ip_configuration_ids = [azurerm_lb.azurerm_lb_integrationruntime.frontend_ip_configuration[0].id]
 
@@ -145,49 +146,58 @@ resource "azurerm_private_link_service" "psl" {
   enable_proxy_protocol = false
 }
 
-# resource "azurerm_private_endpoint" "private_endpoint" {
-#   name                = "integrationruntime-vnet-private-endpoint"
-#   location            = var.location
-#   resource_group_name = var.resource_group_name
-#   subnet_id           = azurerm_subnet.pls_subnet.id
 
-#   private_service_connection {
-#     name                        = "private-service-connection"
-#     private_connection_resource_id = azurerm_private_link_service.psl.id
-#     is_manual_connection = false
-    
-#   }
-# }
 
-resource "azurerm_data_factory_linked_service_postgresql" "aws_rds_development" {
-  name                = "AWS_RDS_development"
-  data_factory_id     = var.data_factory_id
-  integration_runtime_name = var.integration_runtime_name
-  
+### Seguridad
 
-  connection_string = <<-EOF
-    Host=AWS_RDS_development;Port=5432;Database=postgres;UID=root;Password=dfdfdfdfdfdfdf
-  EOF
+resource "azurerm_key_vault" "aws_rds_bplaybet_dev" {
+  name                = "aws-rds-bplaybet-dev-kv"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  tenant_id           = data.azurerm_client_config.current.tenant_id
+  sku_name            = "standard"
+
+  # Configuración de red: Solo accesible a través de endpoints privados
+  network_acls {
+    default_action             = "Deny"
+    bypass                     = "AzureServices" # Permite solo servicios de confianza como ADF
+    virtual_network_subnet_ids = [var.adf_subnet_vnet]  # Subred de la Managed VNet de Data Factory
+  }
 }
 
-# resource "azurerm_private_dns_zone" "integrationruntime_vnet" {
-#   name                = "privatelink.postgres.database.azure.com" # Ajusta según tu servicio
-#   resource_group_name = var.resource_group_name
+
+# resource "azurerm_key_vault_access_policy" "aws_rds_bplaybet_dev" {
+#   key_vault_id = azurerm_key_vault.aws_rds_bplaybet_dev.id
+#   tenant_id    = data.azurerm_client_config.current.tenant_id
+#   object_id    = var.data_factory_object_id
+
+#   secret_permissions = [
+#     "Get",
+#     "List",
+#     "Set",
+#     "Delete",
+#     "Recover",
+#     "Backup",
+#     "Restore",
+#     "Purge"
+#   ]
 # }
 
-# resource "azurerm_private_dns_zone_virtual_network_link" "link" {
-#   name                  = "integrationruntime-vnet-private-dns-link"
-#   resource_group_name   = var.resource_group_name
-#   private_dns_zone_name = azurerm_private_dns_zone.integrationruntime_vnet.name
-#   virtual_network_id    = azurerm_virtual_network.integrationruntime_vnet.id
-#   registration_enabled  = true
+# resource "azurerm_data_factory_linked_service_key_vault" "aws_rds_bplaybet_dev" {
+#   name                = "aws_rds_bplaybet_dev"
+#   data_factory_id     = var.data_factory_id
+
+#   key_vault_id = azurerm_key_vault.aws_rds_bplaybet_dev.id
 # }
 
-# resource "azurerm_private_dns_a_record" "example" {
-#   name                = var.aws_rds_development_dns
-#   zone_name           = azurerm_private_dns_zone.integrationruntime_vnet.name
-#   resource_group_name = var.resource_group_name
-#   ttl                 = 300
-#   records             = [azurerm_private_endpoint.private_endpoint.private_service_connection[0].private_ip_address]
-# }
+# resource "azurerm_data_factory_linked_service_postgresql" "aws_rds_bplaybet_dev" {
+#   name                     = "aws_rds_bplaybet_dev"
+#   data_factory_id          = var.data_factory_id
+#   integration_runtime_name = var.integration_runtime_name
 
+#   connection_string = <<-EOF
+#     Hostname=aws-rds-bplaybet.aws.com;Port=5432;Database=postgres;UID=@Microsoft.KeyVault(SecretUri=https://aws-rds-bplaybet-dev-kv.vault.azure.net/secrets/postgres-username/);PWD=@Microsoft.KeyVault(SecretUri=https://aws-rds-bplaybet-dev-kv.vault.azure.net/secrets/postgres-password/)
+#   EOF
+
+#   description = "Linked service for AWS RDS PostgreSQL database using Key Vault"
+# }

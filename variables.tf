@@ -1,3 +1,6 @@
+
+data "azurerm_client_config" "current" {}
+
 variable "location" {
   default = "East US 2"
   type    = string
@@ -39,7 +42,7 @@ variable "resource_group_name" {
 }
 
 variable "virtualNetworks_integrationruntime_vnet_name" {
-  default = "integrationruntime-vnet-10-200"
+  default = "integrationruntime-for-vnet"
   type    = string
 }
 
@@ -73,7 +76,13 @@ variable "integration_runtime_name" {
   type = string
 }
 
-variable "private" {
-  default = "integrationRuntimeVNET"
-  type = string
+variable "data_factory_object_id" {
+  default = "c0cf894a-9d12-48ae-a6e4-15ae47d5057e"
+  type    = string
 }
+
+variable "adf_subnet_vnet" {
+  default ="/subscriptions/7251a908-4032-4426-bff1-4201c5a4e690/resourceGroups/BOLDTAZ-PROD-EastUS2-RG-Data-Analytics/providers/Microsoft.Network/virtualNetworks/BOLDTAZ-PROD-EastUS2-RG-Data-Analytics-vnet/subnets/default"
+  type    = string
+}
+
