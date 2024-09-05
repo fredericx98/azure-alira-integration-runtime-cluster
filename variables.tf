@@ -86,3 +86,8 @@ variable "adf_subnet_vnet" {
   type    = string
 }
 
+variable "networktest" {
+  default = "/subscriptions/7251a908-4032-4426-bff1-4201c5a4e690/resourceGroups/BOLDTAZ-PROD-EastUS2-RG-Data-Analytics/providers/Microsoft.Network/networkInterfaces/on-backend-subnet612_z1"
+  type    = string
+}
+

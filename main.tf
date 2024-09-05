@@ -96,8 +96,8 @@ resource "azurerm_lb_backend_address_pool" "integrationruntime_backend" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "backend" {
-  network_interface_id    = azurerm_network_interface.integrationruntime_backend_nic.id
-  ip_configuration_name   = "internal"
+  network_interface_id    = var.networktest   # azurerm_network_interface.integrationruntime_backend_nic.id y modificar el internal
+  ip_configuration_name   = "ipconfig1" # "internal"
   backend_address_pool_id = azurerm_lb_backend_address_pool.integrationruntime_backend.id
 }
 
@@ -118,9 +118,9 @@ resource "azurerm_lb_rule" "rds_dev_rule" {
   frontend_ip_configuration_name = "frontend"
   backend_address_pool_ids        = [azurerm_lb_backend_address_pool.integrationruntime_backend.id]
   probe_id                      = azurerm_lb_probe.integrationruntime_probe.id
-  protocol                      = "Tcp"
-  frontend_port                 = 5432
-  backend_port                  = 5432
+  protocol                      = "All"
+  frontend_port                 = 0
+  backend_port                  = 0
   idle_timeout_in_minutes        = 15
   enable_floating_ip             = false
   disable_outbound_snat          = true
@@ -150,20 +150,20 @@ resource "azurerm_private_link_service" "psl" {
 
 ### Seguridad
 
-resource "azurerm_key_vault" "aws_rds_bplaybet_dev" {
-  name                = "aws-rds-bplaybet-dev-kv"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  tenant_id           = data.azurerm_client_config.current.tenant_id
-  sku_name            = "standard"
+# resource "azurerm_key_vault" "aws_rds_bplaybet_dev" {
+#   name                = "aws-rds-bplaybet-dev-kv"
+#   location            = var.location
+#   resource_group_name = var.resource_group_name
+#   tenant_id           = data.azurerm_client_config.current.tenant_id
+#   sku_name            = "standard"
 
-  # Configuración de red: Solo accesible a través de endpoints privados
-  network_acls {
-    default_action             = "Deny"
-    bypass                     = "AzureServices" # Permite solo servicios de confianza como ADF
-    virtual_network_subnet_ids = [var.adf_subnet_vnet]  # Subred de la Managed VNet de Data Factory
-  }
-}
+#   # Configuración de red: Solo accesible a través de endpoints privados
+#   network_acls {
+#     default_action             = "Deny"
+#     bypass                     = "AzureServices" # Permite solo servicios de confianza como ADF
+#     virtual_network_subnet_ids = [var.adf_subnet_vnet]  # Subred de la Managed VNet de Data Factory
+#   }
+# }
 
 
 # resource "azurerm_key_vault_access_policy" "aws_rds_bplaybet_dev" {
@@ -190,14 +190,10 @@ resource "azurerm_key_vault" "aws_rds_bplaybet_dev" {
 #   key_vault_id = azurerm_key_vault.aws_rds_bplaybet_dev.id
 # }
 
-# resource "azurerm_data_factory_linked_service_postgresql" "aws_rds_bplaybet_dev" {
-#   name                     = "aws_rds_bplaybet_dev"
+# resource "azurerm_data_factory_linked_service_postgresql" "aws_rds_development_bookmaker" {
+#   name                     = "aws_rds_development_bookmaker"
 #   data_factory_id          = var.data_factory_id
 #   integration_runtime_name = var.integration_runtime_name
 
-#   connection_string = <<-EOF
-#     Hostname=aws-rds-bplaybet.aws.com;Port=5432;Database=postgres;UID=@Microsoft.KeyVault(SecretUri=https://aws-rds-bplaybet-dev-kv.vault.azure.net/secrets/postgres-username/);PWD=@Microsoft.KeyVault(SecretUri=https://aws-rds-bplaybet-dev-kv.vault.azure.net/secrets/postgres-password/)
-#   EOF
-
-#   description = "Linked service for AWS RDS PostgreSQL database using Key Vault"
+#   connection_string = "Hostname=aws-rds-bplaybet.aws.com;Port=5432;Database=bookmaker;Username=root;Password=pepe"
 # }
