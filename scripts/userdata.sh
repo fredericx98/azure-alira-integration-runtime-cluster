@@ -112,4 +112,4 @@ EOF
 chmod +x /root/ip_fwd.sh
 
 # Ejecutar el script con los parámetros proporcionados
-/root/ip_fwd.sh -i eth0 -f 5432 -a 172.30.35.10 -b 5432
+/root/ip_fwd.sh -i eth0 -f 5432 -a 172.30.35.17 -b 5432

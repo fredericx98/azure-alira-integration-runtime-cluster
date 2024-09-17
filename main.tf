@@ -96,8 +96,8 @@ resource "azurerm_lb_backend_address_pool" "integrationruntime_backend" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "backend" {
-  network_interface_id    = var.networktest   # azurerm_network_interface.integrationruntime_backend_nic.id y modificar el internal
-  ip_configuration_name   = "ipconfig1" # "internal"
+  network_interface_id    = azurerm_network_interface.integrationruntime_backend_nic.id
+  ip_configuration_name   = "internal"
   backend_address_pool_id = azurerm_lb_backend_address_pool.integrationruntime_backend.id
 }
 
