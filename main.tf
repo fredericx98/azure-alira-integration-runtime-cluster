@@ -53,7 +53,7 @@ resource "azurerm_linux_virtual_machine" "integrationruntime_backend_vm" {
   name                = "integrationruntime-backend"
   resource_group_name = var.resource_group_name
   location            = var.location
-  size                = "Standard_B2s" # Standard_B12ms tiene mejor networking
+  size                = "Standard_B12ms" #Standard_B2s" # Standard_B12ms tiene mejor networking
   admin_username      = var.linux_user
   admin_password      = var.linux_password
   network_interface_ids = [azurerm_network_interface.integrationruntime_backend_nic.id]
