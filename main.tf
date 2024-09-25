@@ -36,6 +36,16 @@ resource "azurerm_subnet" "backend_subnet" {
 }
 
 # Interfaz de red
+
+resource "azurerm_public_ip" "integrationruntime_backend_public_ip" {
+  name                = "integrationruntime-backend-public-ip"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Static" # Cambiado a estático
+  sku                 = "Standard" # Asume que estás usando IPs públicas Standard SKU
+}
+
+
 resource "azurerm_network_interface" "integrationruntime_backend_nic" {
   name                = "integrationruntime-backend-nic"
   location            = var.location
@@ -45,8 +55,10 @@ resource "azurerm_network_interface" "integrationruntime_backend_nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.backend_subnet.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.integrationruntime_backend_public_ip.id
   }
 }
+
 
 # Máquina virtual Linux con la interfaz de red
 resource "azurerm_linux_virtual_machine" "integrationruntime_backend_vm" {
