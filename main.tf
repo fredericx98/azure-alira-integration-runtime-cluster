@@ -55,7 +55,7 @@ resource "azurerm_network_interface" "integrationruntime_backend_nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.backend_subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.integrationruntime_backend_public_ip.id
+    #public_ip_address_id          = azurerm_public_ip.integrationruntime_backend_public_ip.id
   }
 }
 
@@ -65,7 +65,7 @@ resource "azurerm_linux_virtual_machine" "integrationruntime_backend_vm" {
   name                = "integrationruntime-backend"
   resource_group_name = var.resource_group_name
   location            = var.location
-  size                = "Standard_B12ms" #Standard_B2s" # Standard_B12ms tiene mejor networking
+  size                = "Standard_B2s" # Standard_B12ms tiene mejor networking
   admin_username      = var.linux_user
   admin_password      = var.linux_password
   network_interface_ids = [azurerm_network_interface.integrationruntime_backend_nic.id]
