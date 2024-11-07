@@ -55,7 +55,9 @@ EOF
 chmod +x /root/ip_fwd.sh
 
 # Ejecutar el script con los parámetros proporcionados
-/root/ip_fwd.sh -i eth0 -f 5432 -a 172.30.35.17 -b 5432
+/root/ip_fwd.sh -i eth0 -f 5432 -a 172.30.35.17 -b 5432  ### development    - 172.30.35.0/26
+/root/ip_fwd.sh -i eth0 -f 5433 -a 172.30.35.74 -b 5432  ### qa             - 172.30.35.64/26
+/root/ip_fwd.sh -i eth0 -f 5434 -a 172.30.41.83 -b 5432  ### production     - 172.30.40.0/23
 
 # Guardar las reglas de iptables de forma permanente
 iptables-save > /etc/iptables/rules.v4
