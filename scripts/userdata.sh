@@ -58,7 +58,7 @@ chmod +x /root/ip_fwd.sh
 /root/ip_fwd.sh -i eth0 -f 5432 -a 172.30.35.17 -b 5432  ### development          - 172.30.35.0/26
 /root/ip_fwd.sh -i eth0 -f 5433 -a 172.30.50.190 -b 5432  ### qa                   - 172.30.51.0/26
 /root/ip_fwd.sh -i eth0 -f 5434 -a 172.30.50.180 -b 5432  ### qa stress           - 172.30.
-/root/ip_fwd.sh -i eth0 -f 5436 -a 172.30.51.116 -b 5432  ### qa test-mendoza     - 172.30. 
+/root/ip_fwd.sh -i eth0 -f 5436 -a 172.30.51.90 -b 5432  ### qa test-mendoza 20 marzo    - 172.30. 
 
 #/root/ip_fwd.sh -i eth0 -f 5435 -a 172.30.51.111 -b 5432  ### qa test-incremental
 
